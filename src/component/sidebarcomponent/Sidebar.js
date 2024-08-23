@@ -18,7 +18,25 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
 import LogoutIcon from '@mui/icons-material/Logout';
+import './sidebar.css'
+
+import { useState,useEffect } from 'react';
+import axios from 'axios';
+import { faDisplay } from '@fortawesome/free-solid-svg-icons';
+import { blue } from '@mui/material/colors';
 const Sidebar = () => {
+ 
+ const [userDetails,setUserDetails] =useState([])
+  useEffect(()=>{
+    axios.get("https://65682d079927836bd9742fb2.mockapi.io/list").then((response)=>{
+      setUserDetails(response.data)
+    }).catch((error)=>{
+      console.log(error)
+    })
+  })
+
+  
+ 
   const menuItems = [
     { icon1: <GridViewIcon/> ,text: 'Dashboard', icon: <DashboardIcon /> },
     { icon1: <Inventory2Icon/>, text: 'Feedbacks',icon: <FeedbackIcon /> },
@@ -35,8 +53,9 @@ const Sidebar = () => {
     { icon1:<LogoutIcon/>}
   ];
 
-  return (
-    <div style={{ width: 250 }}>
+  return ( 
+    <div style={{ width: 250 ,display:'flex'}}>
+      <div className='Left-section'>
       <List>
         {menuItems.map((item, index) => (
           <ListItem button key={index}>
@@ -46,7 +65,36 @@ const Sidebar = () => {
           </ListItem>
         ))}
       </List>
+      </div>
+      <div className='Right-section'>
+      <table className="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>userId</th>
+                        <th>Name</th>
+                        <th>email</th>
+                        <th>age</th>
+                       
+                        
+                    </tr>
+                </thead>
+               {
+            
+                userDetails.map((row)=>(
+                <tr>
+                    <td>{row._userId}</td>
+                    <td>{row.name}</td>
+                    <td>{row.email}</td>
+                    <td>{row.age}</td>
+      </tr>
+
+                ))
+               }
+            </table>
+      </div>
+    
     </div>
+    
   );
 };
 
