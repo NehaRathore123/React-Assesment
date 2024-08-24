@@ -17,13 +17,15 @@ import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import LogoutIcon from '@mui/icons-material/Logout';
 import './sidebar.css'
-
 import { useState,useEffect } from 'react';
 import axios from 'axios';
 import { faDisplay } from '@fortawesome/free-solid-svg-icons';
 import { blue } from '@mui/material/colors';
+import {CSVLink} from 'react-csv';
+
 const Sidebar = () => {
  
  const [userDetails,setUserDetails] =useState([])
@@ -43,7 +45,7 @@ const Sidebar = () => {
     { icon1: <PeopleOutlineRoundedIcon/>,text: 'Leaves',icon: <TimeToLeaveIcon /> },
     { icon1:<CalendarTodayIcon />, text: 'Attendance', icon: <CalendarTodayIcon /> },
     { icon1:<AccessTimeIcon/>, text: 'Daily Timesheet', icon: <AccessTimeIcon /> },
-    {  text: 'Work Log', icon: <WorkIcon /> },
+    {  icon1:<LibraryBooksIcon/>, text: 'Work Log', icon: <WorkIcon /> },
     { icon1:<CurrencyExchangeIcon/>, text: 'Reimbursements', icon: <ReceiptIcon /> },
     {icon1:<ContactMailIcon/>,  text: 'Reports', icon: <ReportIcon /> },
     { icon1:<AddBusinessIcon/>, text: 'My Expenses', icon: <MoneyIcon /> },
@@ -53,6 +55,19 @@ const Sidebar = () => {
     { icon1:<LogoutIcon/>}
   ];
 
+  const handleDelete = (_userId) => {
+    const confirm = window.confirm("Would you like to delete this user?");
+    if (confirm) {
+      axios.delete(`https://65682d079927836bd9742fb2.mockapi.io/list/${_userId}`)
+        .then(() => {
+          // Update state after successful deletion
+          setUserDetails(prevDetails => prevDetails.filter(row => row._userId !== _userId));
+        })
+        .catch((error) => {
+          console.error("There was an error deleting the user!", error);
+        });
+    }
+  };
   return ( 
     <div style={{ width: 250 ,display:'flex'}}>
       <div className='Left-section'>
@@ -74,6 +89,7 @@ const Sidebar = () => {
                         <th>Name</th>
                         <th>email</th>
                         <th>age</th>
+                        <th>Action</th>
                        
                         
                     </tr>
@@ -86,11 +102,18 @@ const Sidebar = () => {
                     <td>{row.name}</td>
                     <td>{row.email}</td>
                     <td>{row.age}</td>
+                    <td>
+                      <button   onClick={() => handleDelete(row._userId)}  className='btn btn-success'>Delete</button> &nbsp;
+                      <CSVLink className="downloadbtn" filename="my-file.csv" data={userDetails}>
+        <button className='btn btn-success'>Export to CSV</button>
+      </CSVLink>
+                    </td>
       </tr>
 
                 ))
                }
             </table>
+
       </div>
     
     </div>
